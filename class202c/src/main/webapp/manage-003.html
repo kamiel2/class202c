@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>더조은 총판</title>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.scrollfollow.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+<link rel="stylesheet" href="/class202c/css/w3.css">
+</head>
+<script>
+	
+</script>
+<style>
+#whole {
+	width: 1500px;
+	position: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#header {
+	position: center;
+	width: 1500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	font-family: "Trebuchet MS", Dotum, Arial;
+	float: left;
+	text-align: center;
+	left: 50%;
+}
+
+h3 {
+	font-family: "Trebuchet MS", Dotum, Arial;
+	margin: 15px 0px;
+}
+
+#topMenu {
+	height: 30px;
+	width: 950px;
+	text-align: center;
+	float: left;
+	margin-top: 40px;
+}
+
+#topMenu ul li {
+	list-style: none;
+	color: white;
+	background-color: #2d2d2d;
+	float: left;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#topMenu .menuLink {
+	text-decoration: none;
+	color: white;
+	display: block;
+	width: 150px;
+	font-size: 16px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Dotum, Arial;
+	text-align: center;
+}
+
+#topMenu .menuLink:hover {
+	color: #ff3;
+	background-color: #4d4d4d;
+}
+
+#mainimg {
+	float: left;
+}
+
+#form {
+	margin-top: 80px;
+	position: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+</style>
+
+<body>
+	<div id="whole">
+		<header id="header">
+			<a href="http://localhost:8080/class202c/manage-000.html"> <img
+				src="img/더조은 메인.jpg" id=mainimg></a> <br>
+
+
+			<nav id="topMenu">
+				<ul>
+					<li><a class="menuLink" href="manage-001.html">판매/출고</a></li>
+					<li><a class="menuLink" href="order-100.html">발주/입고</a></li>
+					<li><a class="menuLink" href="manage-005.html">재고 관리</a></li>
+					<li><a class="menuLink" href="manage-008.html">파트너사 관리</a></li>
+					<li><a class="menuLink" href="manage-003.html">부품 등록</a></li>
+					<li><a class="menuLink" href="manage-009.html">카테고리 등록</a></li>
+
+				</ul>
+			</nav>
+		</header>
+		<br><br><br><br><br>
+		
+			<div>
+				<form name="frm" action="" method="post">
+					<div style="text-align: center">
+						<H3>
+							<B>부품 등록</B>
+						</H3>
+					</div>
+
+				</form>
+			</div>
+			<div>
+				<table border='1'
+					class="table table-striped table-bordered table-hover" id="add">
+					<tr>
+
+						<th class="w3-blue-grey">분류</th>
+						<td><select name="isapproval">
+								<option>대분류</option>
+								<option value="Y">DB 값 입력 </option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+						</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <select name="isapproval">
+								<option>중분류</option>
+								<option value="Y">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="Y">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+						</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <select name="isapproval">
+								<option>소분류</option>
+								<option value="Y">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="Y">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+								<option value="N">DB 값 입력</option>
+						</select></td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">부품ID</th>
+						<td><label =itemid> <input type="text" name="부품ID" readonly disabled></label>
+							01425706 제일 좋은건, 대/중/소분류 차례대로 선택 할 때마다 차례대로 자동으로 매겨지는 방식</td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">부품명</th>
+						<td><label =itemnm> <input type="text" name="부품명"></label>
+							GALAXY 1080TI / only capital character ??</td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">제조사ID</th>
+						<td>021552 - 나중엔 옵션 type으로 변경</td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">제조사</th>
+						<td>GALAXY - 제조사 ID 선택시 자동으로 기입 되도 좋을 듯</td>
+
+					</tr>
+
+					<!--  	<tr>
+
+				<th class="w3-blue-grey">현재재고</th>
+				<td> </td> 등록 시에는 당연히 0이기 때문에 재고는 없어도 됨,
+
+			</tr>
+			<tr>
+
+				<th class="w3-blue-grey">현재재고평균단가</th>
+				<td></td>
+
+			</tr>-->
+					<tr>
+
+						<th class="w3-blue-grey">입고 가격</th>
+						<td>입고 가격</td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">주문 가격</th>
+						<td>주문 가격</td>
+
+					</tr>
+					<tr>
+
+						<th class="w3-blue-grey">코멘트</th>
+						<td></td>
+
+					</tr>
+
+
+				</table>
+
+			</div>
+			<div class="w3-container  w3-right-align  w3-margin">
+				<a href="http://localhost:8080/class202c/manage-000.html" class="w3-btn w3-blue-grey">취소</a>
+				<a href=""
+					class="w3-btn w3-blue-grey">등록하기</a>
+			</div>
+		</div>
+
+</body>
+
+</html>

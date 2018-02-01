@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias alias="filesVo" type="com.ohhoonim.vo.FilesVo"/>
+		<typeAlias alias="boardVo" type="com.ohhoonim.vo.BoardVo"/>
+		<typeAlias alias="categoryVo" type="com.ohhoonim.vo.CategoryVo"/>
+		<typeAlias alias="incomingVo" type="com.ohhoonim.vo.IncomingVo"/>
+		<typeAlias alias="ordrVo" type="com.ohhoonim.vo.OrdrVo"/>
+		<typeAlias alias="outgoingVo" type="com.ohhoonim.vo.OutgoingVo"/>
+		<typeAlias alias="productVo" type="com.ohhoonim.vo.ProductVo"/>
+		<typeAlias alias="ptnrVo" type="com.ohhoonim.vo.PtnrVo"/>
+		<typeAlias alias="purchaseVo" type="com.ohhoonim.vo.PurchaseVo"/>
+		<typeAlias alias="stockVo" type="com.ohhoonim.vo.StockVo"/>
+		<typeAlias alias="idManageVo" type="com.ohhoonim.vo.IdManageVo"/>
+	</typeAliases>
+</configuration>

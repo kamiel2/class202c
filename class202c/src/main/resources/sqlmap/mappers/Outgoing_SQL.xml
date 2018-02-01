@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Outgoing">
+
+	<resultMap id="outgoing" type="com.ohhoonim.vo.OutgoingVo">
+		<result property="ordrId" column="ORDR_ID" />
+		<result property="productId" column="PRODUCT_ID" />
+		<result property="count" column="COUNT" />
+		<result property="amnt" column="AMNT" />
+		<result property="amnt2" column="AMNT2" />
+		<result property="ogDate" column="OG_DATE" />
+	</resultMap>
+
+	<sql id="outgoingSql">
+	</sql>
+
+	<insert id="insertOutgoing" parameterType="OutgoingVo">
+		INSERT INTO OUTGOING (ORDR_ID,PRODUCT_ID,COUNT,AMNT,OG_DATE)VALUES
+		(#{ordrId},#{productId},#{count},#{amnt},sysdate)
+	</insert>
+
+	<select id="selectOutgoing" parameterType="OutgoingVo"
+		resultMap="outgoing">
+	</select>
+	
+	<select id="outgoingCounter"  resultType="int">
+		SELECT COUNT(0) FROM OUTGOING
+		WHERE ORDR_ID = #{ordrId}
+	</select>
+	
+	<update id="ordroutgoingModify">
+		UPDATE OUTGOING
+		<set>
+			<if test="amnt2!=null">AMNT = #{amnt2}</if>
+		</set>
+		WHERE ORDR_ID = #{ordrId}
+		AND COUNT = #{count}
+		AND PRODUCT_ID = #{productId} 
+	</update>
+
+	<delete id="deleteOutgoing" parameterType="OutgoingVo">
+	</delete>
+
+	<update id="updatecancelOutgoing" parameterType="OutgoingVo">
+	</update>
+
+</mapper>

@@ -1,0 +1,107 @@
+--<부품 조회>
+--부품id/부품이름/제조사id/제조사이름/재고/안전재고/부품단가/대분류/중분류/소분류
+--전체 조회 쿼리이므로 where 절에 and 조건 으로 추가적으로 넣어 검색 옵션 작성
+
+--카테고리 3가지 모두 서브쿼리
+select p.product_id,p.product_nm, p. PTNR_id, PTNR.PTNR_nm,s.stock, s.safety_stock,s.unit_cost,
+--대분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id = p.ctgr_1st) as 대분류,
+--중분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id=p.ctgr_2nd) as 중분류,
+--소분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id=p.ctgr_3rd) as 소분류
+from product p , stock s, partner PTNR
+where p.product_id = s.product_id and PTNR.PTNR_id=p.PTNR_id;
+
+
+--소분류를 조인으로 처리함
+select p.product_id,p.product_nm, p. PTNR_id, PTNR.PTNR_nm,s.stock, s.safety_stock,s.unit_cost,
+--대분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id = p.ctgr_1st) as 대분류,
+--중분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id=p.ctgr_2nd) as 중분류
+--소분류 조인으로
+,category.ctgr_nm as 소분류
+from product p , stock s, partner PTNR, category
+where p.product_id = s.product_id and PTNR.PTNR_id=p.PTNR_id and category.ctgr_id=p.ctgr_3rd;
+
+
+--카테고리 내부에서 소분류 값 자체만으로 검색되게 해보자. with join
+--PRODUCT 테이블에 있는 대분류ID 중분류ID 고유값을 일절 사용하지 않는다.
+select p.product_id,p.product_nm, p. PTNR_id, PTNR.PTNR_nm,s.stock, s.safety_stock,s.unit_cost,
+--대분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id=(select ctgr_parent
+from category
+where ctgr_id = (select ctgr_parent from category
+where ctgr_id=p.ctgr_3rd))) as 대분류,
+--중분류 서브쿼리
+(select ctgr_nm
+from category
+where ctgr_id = (select ctgr_parent from category
+where ctgr_id=p.ctgr_2nd)) as 중분류
+--소분류 조인으로
+,category.ctgr_nm as 소분류
+from product p , stock s, partner PTNR,category
+where p.product_id = s.product_id and PTNR.PTNR_id=p.PTNR_id and category.ctgr_id=p.ctgr_3rd;
+
+
+--<상위 카테고리 검색>
+--카테고리 내에서 상위레벨 분류 찾음
+select ctgr_nm
+from category
+where ctgr_id = (select ctgr_parent from category
+where ctgr_id=' [카테고리ID] ');
+
+--카테고리 내에서 두번째 상위레벨 분류 찾음
+select ctgr_nm
+from category
+where ctgr_id=(select ctgr_parent
+from category
+where ctgr_id = (select ctgr_parent from category
+where ctgr_id='[카테고리ID]'));
+
+--<부품 등록>
+--PRODUCT  파트가 먼저 반드시 들어가야한다!!
+Insert into PRODUCT (PRODUCT_ID,PRTNR_ID,PRODUCT_NM,CTGR_1ST,CTGR_2ND,CTGR_3RD,SELL_COST,COMMENTS) values ('135425','111256','갤럭시 GALAX 지포스 GTX1080 Hall Of Fame D5X 8GB','1002','2003','3016',810000,null);
+
+--STOCK 파트. 초기값은 일단 모두 0 0 0 잡을까 함 재고/안전재고/단가. 특히 단가는 직접 입력이 좋아보이지 않는다.)
+Insert into STOCK (PRODUCT_ID,STOCK,SAFETY_STOCK,UNIT_COST) values ('135425',10,75,786408);
+--초기화 0값 
+Insert into STOCK (PRODUCT_ID,STOCK,SAFETY_STOCK,UNIT_COST) values ('135425',0,0,0);
+
+DELETE STOCK 
+WHERE PRODUCT_ID=135425;
+DELETE PRODUCT
+WHERE PRODUCT_ID=135425;
+
+--<부품 수정>
+UPDATE PRODUCT
+SET [수정위치] = [수정내용]
+WHERE PRODUCT_ID = '[부품 ID]'
+--부품 ID는 반드시 필수다. 이게 PK 값이야!
+
+--<파트너사 조회>
+SELECT * FROM PARTNER;
+
+--<재고 수정>
+UPDATE STOCK
+SET STOCK = '[입력 변수]'
+WHERE PRODUCT_ID = '[부품 ID]';
+
+--<안전 재고 수정>
+UPDATE STOCK
+SET SAFETY_STOCK = '[입력 변수]'
+WHERE PRODUCT_ID = '[부품 ID]';
+

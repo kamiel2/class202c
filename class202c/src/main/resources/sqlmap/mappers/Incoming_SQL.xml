@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Incoming">
+
+	<resultMap id="incoming" type="com.ohhoonim.vo.IncomingVo">
+		<result property="purchaseId" column="PURCHASE_ID" />
+		<result property="count" column="COUNT" />
+		<result property="amnt" column="AMNT" />
+		<result property="icDate" column="IC_DATE" />
+	</resultMap>
+	
+	<resultMap id="incomingMap" type="java.util.Map">
+		<result property="purchaseId" column="PURCHASE_ID" javaType="java.lang.String" />
+		<result property="count" column="COUNT" javaType="java.lang.String"/>
+		<result property="icAmnt" column="IC_AMNT" javaType="java.lang.String"/>
+		<result property="icDate" column="IC_DATE" javaType="java.lang.String"/>
+		<result property="productId" column="PRODUCT_ID" javaType="java.lang.String"/>
+		<result property="ptnrNm" column="PTNR_NM" javaType="java.lang.String"/>
+		<result property="productNm" column="PRODUCT_NM" javaType="java.lang.String"/>
+		<result property="stock" column="STOCK" javaType="java.lang.String"/>
+		<result property="safetyStock" column="SAFETY_STOCK" javaType="java.lang.String"/>
+		<result property="unitPrice" column="UNIT_PRICE" javaType="java.lang.String"/>
+		<result property="amnt" column="AMNT" javaType="java.lang.String"/>
+		<result property="amntLo" column="AMNT_LO" javaType="java.lang.String"/>
+		<result property="status" column="STATUS" javaType="java.lang.String"/>
+	</resultMap>
+	
+
+	<sql id="incomingSql">
+	SELECT 
+		I.PURCHASE_ID, I.COUNT, I.AMNT AS IC_AMNT, TO_CHAR(I.IC_DATE, 'YYYY-MM-DD HH24:MI:SS')AS IC_DATE, PUR.PRODUCT_ID, 
+		P.PRODUCT_NM, PTNR.PTNR_NM, S.STOCK, S.SAFETY_STOCK, PUR.UNIT_PRICE, PUR.AMNT, PUR.AMNT_LO, PUR.STATUS
+	FROM
+		INCOMING I, PURCHASE PUR, PRODUCT P, PARTNER PTNR, STOCK S
+	WHERE 
+		PUR.PURCHASE_ID = I.PURCHASE_ID AND PUR.PRODUCT_ID=P.PRODUCT_ID 
+		AND PTNR.PTNR_ID = P.PTNR_ID AND S.PRODUCT_ID = PUR.PRODUCT_ID
+	</sql>
+
+	<insert id="insertIncoming" parameterType="incomingVo">
+	Insert INTO INCOMING
+	 (PURCHASE_ID,"COUNT",AMNT,IC_DATE) 
+	VALUES
+	(#{purchaseId},#{count},#{amnt}, sysdate)
+	</insert>
+
+	<select id="selectIncoming" resultMap="incomingMap">
+	SELECT * FROM (
+	<include refid="incomingSql" />
+	)WHERE
+	PURCHASE_ID = #{purchaseId}
+	</select>
+	
+	<select id="incomingDetail_short" resultMap="incomingMap">
+	SELECT "PURCHASE_ID", "PTNR_NM", "PRODUCT_ID", "PRODUCT_NM", "AMNT"
+	, "AMNT_LO", "UNIT_PRICE", "COUNT", "IC_AMNT"
+	FROM (
+	<include refid="incomingSql" />
+	)
+	WHERE
+	PURCHASE_ID = #{purchaseId}
+	<if test="count != null">
+	AND COUNT = #{count}
+	</if>
+	</select>
+	
+	<select id="getAmnt" parameterType="incomingVo" resultMap="incoming">
+	SELECT "AMNT"
+	FROM INCOMING
+	WHERE
+	PURCHASE_ID = #{purchaseId}
+	AND COUNT = #{count}
+	</select>
+	
+	<select id="incomingCounter"  resultType="int">
+	SELECT COUNT(0) FROM INCOMING
+	WHERE PURCHASE_ID = #{purchaseId}
+	</select>
+
+	<update id="updateIncoming" parameterType="incomingVo">
+	UPDATE INCOMING
+	SET
+		AMNT = #{amnt}
+	WHERE 
+		PURCHASE_ID = #{purchaseId}
+		AND 
+		COUNT = #{count}
+	</update>
+
+	<delete id="deleteIncoming" parameterType="incomingVo">
+	</delete>
+
+	<update id="updatecancelIncoming" parameterType="incomingVo">
+	</update>
+
+</mapper>

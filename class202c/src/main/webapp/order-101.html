@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+<link rel="stylesheet" href="/class202c/css/w3.css">
+
+</head>
+<body>
+	<div>
+		<form name="frm" action="" method="post">
+			<div style="text-align: center">
+				<H3>
+					<B>발주조회/수정</B>
+				</H3>
+			</div>
+			<table>
+				<tr>
+					<td><select name="isapproval">
+							<option value="Y">제조사ID</option>
+							<option value="Y">제조사이름</option>
+							<option value="Y">부품ID</option>
+							<option value="N">부품이름</option>
+							<option value="N">분류</option>
+							<option value="N">발주총액</option>
+							<option value="N">발주ID</option></td>
+					<td>&nbsp;&nbsp;<input type="text" name="nickname" value="" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="" class="w3-btn w3-blue-grey">검색</a> 
+					</td>
+				</tr>
+			</table>
+			<div class="w3-container  w3-right-align  w3-margin">
+				<a href="" class="w3-btn w3-blue-grey">뒤로가기</a> 
+			</div>
+		</form>
+	</div>
+	<div>
+		<table border='1'
+			class="table table-striped table-bordered table-hover">
+			<tr>
+				
+				<th class="w3-blue-grey">발주ID</th>
+				<th class="w3-blue-grey">부품ID</th>
+				<th class="w3-blue-grey">부품명</th>
+				<th class="w3-blue-grey">제조사ID</th>
+				<th class="w3-blue-grey">제조사</th>
+				<th class="w3-blue-grey">분류</th>
+				<th class="w3-blue-grey">재고수량</th>
+				<th class="w3-blue-grey">현재재고평균단가</th>
+				<th class="w3-blue-grey">판매가격</th>
+				<th class="w3-blue-grey">발주수량</th>
+				<th class="w3-blue-grey">발주단가</th>
+				<th class="w3-blue-grey">발주총액</th>
+				<th class="w3-blue-grey">발주수정</th>
+				<th class="w3-blue-grey">발주취소</th>
+			</tr>
+
+			<tr class="temp">
+				<td>2017110101425706-001</td>
+				<td>01425706</td>
+				<td>GALAXY1080TI</td>
+				<td>021552</td>
+				<td>GALAXY</td>
+				<td>VGA>NVIDIA>GTX1080TI</td>
+				<td>200</td>
+				<td>1,354,000</td>
+				<td>1,395,000</td>
+				<td>100</td>
+				<td>1,354,000</td>
+				<td>100,354,000</td>
+				<td><a href="" class="w3-btn w3-blue-grey">수정</a></td>
+				<td><a href="" class="w3-btn w3-blue-grey">취소</a></td>
+			</tr>
+			<tr>
+				<td>2017110101370862-001</td>
+				<td>01370862</td>
+				<td>GIGABYTE GTX1070 8GB</td>
+				<td>021741</td>
+				<td>GIGABYTE</td>
+				<td>VGA>NVIDIA>GTX1070</td>
+				<td>250</td>
+				<td>580,500</td>
+				<td>598,000</td>
+				<td>100</td>
+				<td>590,000</td>
+				<td>59,000,000</td>
+				<td><a href="" class="w3-btn w3-blue-grey">수정</a></td>
+				<td><a href="" class="w3-btn w3-blue-grey">취소</a></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

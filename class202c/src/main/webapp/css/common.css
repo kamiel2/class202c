@@ -1,0 +1,171 @@
+#wrapper {
+	margin: 5px 30px;
+}
+#title > h1 {
+	color: blue;
+}
+#search {
+	margin-bottom: 20px;
+}
+#buttons {
+	float: right;
+	margin-bottom: 5px;
+}
+
+#popup_wrap {width:90%; height:270px; background:#fff; border: solid 1px #666666; position:fixed; top:30%; left:5%; z-index:9999; display:none;} 
+
+#mask {width:100%; height:100%; position:fixed; background:rgba(0,0,0,0.7) repeat; top:0; left:0; z-index:999; display:none;} 
+.popup_content {margin-left:10px;}
+.popup-cont01 {width:478px; margin: 40px auto; text-align: center;}
+.popup-cont01 button { width: 138px; height: 36px; line-height: 36px; background: #9f2f60; color: #ffffff; text-align: center; border: none; font-size: 16px;}
+
+#popup_open {
+	display:none;
+	}	
+
+#whole {
+	width: 1500px;
+	position: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#header {
+	position: center;
+	width: 1500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	font-family: "Trebuchet MS", Dotum, Arial;
+	float: left;
+	text-align: center;
+	left: 50%;
+}
+
+h3 {
+	font-family: "Trebuchet MS", Dotum, Arial;
+	margin: 15px 0px;
+}
+
+#topMenu {
+	height: 30px;
+	width: 950px;
+	text-align: center;
+	float: left;
+	margin-top: 40px;
+}
+
+#topMenu ul li {
+	list-style: none;
+	color: white;
+	background-color: #2d2d2d;
+	float: left;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#topMenu .menuLink {
+	text-decoration: none;
+	color: white;
+	display: block;
+	width: 150px;
+	font-size: 16px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Dotum, Arial;
+	text-align: center;
+}
+
+#topMenu .menuLink:hover {
+	color: #ff3;
+	background-color: #4d4d4d;
+}
+
+#mainimg {
+	float: left;
+}
+
+/* ³¯Â¥ */
+.wrap_listsearch {
+	display: block;
+	padding: 14px 19px;
+	border: 1px solid #ddd;
+	background-color: #f9f9f9;
+	zoom: 1;
+	width: 750px;
+	height: 100%;
+}
+
+.wrap_listsearch .fieldset {
+	width: 750px;
+	height: 100%;
+}
+
+.wrap_listsearch .tit_mypage {
+	float: left;
+	margin: 24px 0 24px 10px;
+}
+
+.wrap_listsearch .box_cont {
+	float: left;
+	margin-left: 20px;
+}
+
+.wrap_listsearch .box_cont .box_opt .btn_flexible03 .inner {
+	min-width: 45px;
+}
+
+.wrap_listsearch .box_cont .box_radio, .wrap_listsearch .box_cont .box_opt
+	{
+	clear: both;
+	display: block;
+	overflow: hidden;
+	padding: 5px 0;
+}
+
+.wrap_listsearch .box_radio .btn_label .inner {
+	float: left;
+	height: 100%;
+	padding-left: 9px;
+	font-size: 14px;
+	line-height: 21px;
+	color: #666;
+	letter-spacing: 1px;
+}
+
+.wrap_listsearch .box_radio .on .inner {
+	font-weight: bold;
+	color: #F13;
+}
+
+.wrap_listsearch .box_opt select {
+	height: 21px;
+	border: 1px solid #ccc;
+}
+
+.wrap_listsearch .box_opt .txt {
+	font-size: 12px;
+	line-height: 21px;
+	font-family: Gulim, '±¼¸²';
+	color: #666;
+}
+
+.wrap_listsearch .box_opt .opt_year {
+	width: 68px;
+}
+
+.wrap_listsearch .box_opt .opt_month {
+	width: 46px;
+}
+
+.wrap_listsearch .box_opt .opt_day {
+	width: 46px;
+}
+
+.wrap_listsearch .box_opt .btn_flexible {
+	margin-left: 5px;
+	vertical-align: top
+}
+

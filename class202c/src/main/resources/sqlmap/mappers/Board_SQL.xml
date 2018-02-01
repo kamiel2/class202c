@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Board">
+
+
+	<resultMap id="board" type="com.ohhoonim.vo.BoardVo">
+		<result property="bNumber" column="B_NUMBER" />
+		<result property="memberId" column="MEMBER_ID" />
+		<result property="category" column="CATEGORY" />
+		<result property="title" column="TITLE" />
+		<result property="rDate" column="R_DATE" />
+		<result property="clickNum" column="CLICK_NUM" />
+		<result property="contents" column="CONTENTS" />
+	</resultMap>
+
+	<sql id="title">
+		SELECT
+		B_NUMBER
+		, MEMBER_ID
+		, CATEGORY
+		, TITLE
+		, R_DATE
+		,
+		CLICK_NUM
+		FROM BOARD
+		WHERE TITLE LIKE '%'||#{title}||'%' and CATEGORY != '공지'
+		ORDER
+		BY to_number(b_number)
+		DESC
+	</sql>
+
+	<select id="selectNotice" parameterType="BoardVo"
+		resultMap="board">
+
+		SELECT *
+		FROM BOARD
+		WHERE CATEGORY = '공지'
+		ORDER BY to_number(b_number) DESC
+
+	</select>
+
+	<select id="selectBoardList" parameterType="BoardVo" resultMap="board">
+
+		SELECT *
+		FROM (
+			SELECT ROWNUM AS RN, A.*
+				FROM (
+					<include refid="title" />
+					) A
+		)
+		WHERE ROWNUM <![CDATA[ <= ]]> #{pageSize, jdbcType=INTEGER}
+			AND RN <![CDATA[ > ]]> (#{pageNo, jdbcType=INTEGER}-1)*#{pageSize, jdbcType=INTEGER}
+
+	</select>
+
+	<select id="selectBoardListCount" parameterType="BoardVo" resultType="int">
+		SELECT COUNT(0) totalCnt
+		FROM (
+		<include refid="title" />
+		)
+	</select>
+
+	<select id="selectBoard" parameterType="BoardVo" resultMap="board">
+
+		SELECT
+		B_NUMBER
+		, MEMBER_ID
+		, CATEGORY
+		, TITLE
+		, R_DATE
+		, CLICK_NUM
+		, CONTENTS
+		FROM BOARD
+		WHERE B_NUMBER =  #{bNumber}
+
+	</select>
+
+	<update id="updateBoard">
+		
+		UPDATE BOARD
+		SET
+
+		B_NUMBER = #{bNumber}
+		, MEMBER_ID = #{memberId, jdbcType=VARCHAR}
+		, CATEGORY = #{category, jdbcType=VARCHAR}
+		, TITLE = #{title, jdbcType=VARCHAR}
+		, R_DATE = SYSDATE
+		, CONTENTS = #{contents, jdbcType=VARCHAR}
+
+		
+		WHERE B_NUMBER = #{bNumber, jdbcType=VARCHAR}
+		
+	</update>
+	
+	<update id="updateViewCount">
+	update board 
+	set 
+	
+	click_num = (select click_num+1 from BOARD where b_number = #{bNumber, jdbcType=VARCHAR})
+where b_number = #{bNumber, jdbcType=VARCHAR}
+	
+	
+	</update>
+
+
+
+
+	<delete id="deleteBoard">
+		DELETE BOARD
+		WHERE B_NUMBER = #{bNumber, jdbcType=VARCHAR}
+	</delete>
+
+
+	<insert id="addBoard" parameterType="BoardVo">
+		INSERT INTO BOARD(B_NUMBER,
+		MEMBER_ID, CATEGORY, TITLE, R_DATE, CLICK_NUM, FILE_ID, CONTENTS)
+		VALUES(SEQ_BOARD.NEXTVAL, #{memberId, jdbcType=VARCHAR}, #{category, jdbcType=VARCHAR}, #{title, jdbcType=VARCHAR}, SYSDATE,
+		0, #{fileId, jdbcType=VARCHAR}, #{contents, jdbcType=VARCHAR})
+	</insert>
+
+
+
+
+
+
+</mapper>

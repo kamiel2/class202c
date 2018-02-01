@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Product">
+
+	<resultMap id="product" type="com.ohhoonim.vo.ProductVo">
+		<result property="productId" column="PRODUCT_ID" />
+		<result property="productNm" column="PRODUCT_NM" />
+		<result property="ptnrId" column="PTNR_ID" />
+		<result property="ptnrNm" column="PTNR_NM" />
+		<result property="stock" column="STOCK" />
+		<result property="safetyStock" column="SAFETY_STOCK" />
+		<result property="unitPrice" column="UNIT_PRICE" />
+		<result property="salesCost" column="SALES_COST" />
+		<result property="cmnt" column="CMNT" />
+		<result property="ctgr1st" column="CTGR_1ST" />
+		<result property="ctgr2nd" column="CTGR_2ND" />
+		<result property="ctgr3rd" column="CTGR_3RD" />
+		<result property="soldAmnt" column="SOLD_AMNT" />
+	</resultMap>
+
+	<resultMap id="productMap" type="java.util.Map">
+		<result property="productId"    column="PRODUCT_ID" 	javaType="java.lang.String" />
+		<result property="productNm"    column="PRODUCT_NM" 	javaType="java.lang.String" />
+		<result property="ptnrId"       column="PTNR_ID"		javaType="java.lang.String" />
+		<result property="ptnrNm"       column="PTNR_NM" 		javaType="java.lang.String" />
+		<result property="stock"        column="STOCK" 			javaType="java.lang.String" />
+		<result property="safetyStock"  column="SAFETY_STOCK" 	javaType="java.lang.String" />
+		<result property="unitPrice"    column="UNIT_PRICE" 	javaType="java.lang.String" />
+		<result property="salesCost"    column="SALES_COST" 	javaType="java.lang.String" />
+		<result property="ctgr1st"      column="CTGR_1ST" 		javaType="java.lang.String" />
+		<result property="ctgr2nd"      column="CTGR_2ND" 		javaType="java.lang.String" />
+		<result property="ctgr3rd"      column="CTGR_3RD" 		javaType="java.lang.String" />
+		<result property="ctgrid1st"    column="CTGRID_1ST" 	javaType="java.lang.String" />
+		<result property="ctgrid2nd"    column="CTGRID_2ND" 	javaType="java.lang.String" />
+		<result property="ctgrid3rd"    column="CTGRID_3RD" 	javaType="java.lang.String" />
+		<result property="cmnt"         column="CMNT" 			javaType="java.lang.String" />
+		<result property="avgUnitPrice" column="AVGUNITPRICE" 			javaType="java.lang.String" />
+	</resultMap>
+	<!-- Map 형태로도 해보려고 예시만 만들어둠 -->
+
+	<sql id="product">
+		<!--부품ID/부품이름/제조사ID/제조사이름/재고/안전재고/부품단가/부품가격/대분류/중분류/소분류 -->
+		SELECT P.PRODUCT_ID, P.PRODUCT_NM, P.PTNR_ID, 
+        (SELECT PTNR_NM FROM PARTNER WHERE PTNR_ID = P.PTNR_ID) AS PTNR_NM, 
+        (SELECT STOCK FROM STOCK WHERE PRODUCT_ID=P.PRODUCT_ID) AS STOCK,
+        (SELECT SAFETY_STOCK FROM STOCK WHERE PRODUCT_ID=P.PRODUCT_ID) AS SAFETY_STOCK,
+        (SELECT UNIT_PRICE FROM STOCK WHERE PRODUCT_ID=P.PRODUCT_ID) AS UNIT_PRICE,
+        (SELECT SOLD_AMNT FROM STOCK WHERE PRODUCT_ID=P.PRODUCT_ID) AS SOLD_AMNT,
+        P.SALES_COST, 
+		--대분류
+		(SELECT CTGR_NM FROM CATEGORY WHERE CTGR_ID = P.CTGR_1ST) AS CTGR_1ST,
+		--중분류
+		(SELECT CTGR_NM FROM CATEGORY WHERE CTGR_ID = P.CTGR_2ND) AS CTGR_2ND,
+		--소분류
+		(SELECT CTGR_NM FROM CATEGORY WHERE CTGR_ID = P.CTGR_3RD) AS CTGR_3RD,
+		P.CTGR_1ST AS CTGRID_1ST,
+		P.CTGR_2ND AS CTGRID_2ND,
+		P.CTGR_3RD AS CTGRID_3RD,
+		P.CMNT
+		FROM PRODUCT P
+	</sql>
+
+	<insert id="insertProduct" parameterType="ProductVo">
+		INSERT INTO PRODUCT
+		(PRODUCT_ID,PTNR_ID,PRODUCT_NM,CTGR_1ST,CTGR_2ND,CTGR_3RD,SALES_COST,CMNT)
+		VALUES (
+		#{productId},	
+        #{ptnrId},
+        #{productNm},
+        #{ctgr1st},
+        #{ctgr2nd},
+        #{ctgr3rd},
+        #{salesCost},
+        #{cmnt}
+         ) 
+	</insert>
+
+	<select id="selectProduct" parameterType="ProductVo" resultMap="product">
+		--부품ID/부품이름/제조사ID/제조사이름/재고/안전재고/부품단가/부품가격/대분류/중분류/소분류
+		SELECT * FROM (
+		<include refid="product" />
+		)
+		<where>
+			<if test="productId != null">
+				UPPER(PRODUCT_ID) LIKE UPPER('%' ||#{productId}|| '%')
+			</if>
+			<if test="ptnrId != null">
+				AND PTNR_ID = #{ptnrId}
+			</if>
+			<if test="ptnrNm != null">
+				AND UPPER(PTNR_NM) LIKE UPPER('%' ||#{ptnrNm}|| '%')
+			</if>
+			<if test="ctgr1st != null">
+				AND CTGR_1ST = #{ctgr1st}
+			</if>
+			<if test="ctgr2nd != null">
+				AND CTGR_2ND = #{ctgr2nd}
+			</if>
+			<if test="ctgr3rd != null">
+				AND CTGR_3RD = #{ctgr3rd}
+			</if>
+			<if test="productNm != null">
+				AND UPPER(PRODUCT_NM) LIKE UPPER('%' ||#{productNm}|| '%')
+			</if>
+			<if test="ctgrId != null">
+				AND PRODUCT_ID LIKE UPPER(#{ctgrId} || '%')
+			</if>
+		</where>
+	</select>
+	
+		<select id="purchaseAddDetail"  resultMap="productMap">
+		--부품ID/부품이름/제조사ID/제조사이름/재고/안전재고/부품단가/부품가격/대분류/중분류/소분류
+		SELECT PRODUCT_ID, PRODUCT_NM, PTNR_ID, PTNR_NM, STOCK,
+		SAFETY_STOCK, UNIT_PRICE AS AVGUNITPRICE, SALES_COST,CMNT FROM (
+		<include refid="product" />
+		)
+		WHERE
+		UPPER(PRODUCT_ID) LIKE UPPER(#{productId}|| '%')
+
+	</select>
+
+	<select id="selectProductB" parameterType="ProductVo" resultMap="product">
+		--부품ID/부품이름/제조사ID/제조사이름/재고/안전재고/부품단가/부품가격/대분류/중분류/소분류
+		SELECT * FROM (
+		SELECT P.PRODUCT_ID,P.PRODUCT_NM, PTNR.PTNR_NM, S.STOCK, P.SALES_COST,
+		GREATEST(S.STOCK - S.SAFETY_STOCK, 0) AS RSTOCK,
+
+		(SELECT CTGR_NM FROM CATEGORY WHERE CTGR_ID=(SELECT CTGR_PARENT FROM CATEGORY
+		WHERE CTGR_ID =
+		(SELECT CTGR_PARENT FROM CATEGORY WHERE CTGR_ID=P.CTGR_3RD))) AS CTGR_1ST,
+		(SELECT CTGR_NM FROM CATEGORY WHERE CTGR_ID = (SELECT CTGR_PARENT FROM
+		CATEGORY WHERE CTGR_ID=P.CTGR_2ND)) AS CTGR_2ND,
+		CATEGORY.CTGR_NM AS CTGR_3RD
+
+		FROM PRODUCT P, STOCK S, PARTNER PTNR, CATEGORY
+		WHERE P.PRODUCT_ID = S.PRODUCT_ID AND PTNR.PTNR_ID=P.PTNR_ID AND
+		CATEGORY.CTGR_ID=P.CTGR_3RD
+		)
+		<where>
+			<if test="productId != null">
+				UPPER(PRODUCT_ID) LIKE '%' ||#{productId}|| '%'
+			</if>
+			<if test="ptnrId != null">
+				AND PTNR_ID = #{ptnrId}
+			</if>
+			<if test="ptnrNm != null">
+				AND UPPER(PTNR_NM) LIKE '%' ||#{ptnrNm}|| '%'
+			</if>
+			<if test="ctgr1st != null">
+				AND CTGR_1ST = #{CTGRID_1ST}
+			</if>
+			<if test="ctgr2nd != null">
+				AND CTGR_2ND = #{CTGRID_2ND}
+			</if>
+			<if test="ctgr3rd != null">
+				AND CTGR_3RD = #{CTGRID_3RD}
+			</if>
+			<if test="productNm != null">
+				AND UPPER(PRODUCT_NM) LIKE '%' ||#{productNm}|| '%'
+			</if>
+			<if test="ctgrId != null">
+				AND PRODUCT_ID LIKE #{ctgrId} || '%'
+			</if>
+
+		</where>
+	</select>
+	
+	<select id="selectProductMap" resultMap="productMap">	
+		--부품ID/부품이름/제조사ID/제조사이름/재고/안전재고/부품단가/부품가격/대분류/중분류/소분류
+		SELECT * FROM (
+		<include refid="product" />
+		)
+		<where>
+			<if test="productId != null">
+				UPPER(PRODUCT_ID) LIKE UPPER('%' ||#{productId}|| '%')
+			</if>
+			<if test="ptnrId != null">
+				AND PTNR_ID = #{ptnrId}
+			</if>
+			<if test="ptnrNm != null">
+				AND UPPER(PTNR_NM) LIKE UPPER('%' ||#{ptnrNm}|| '%')
+			</if>
+			<if test="ctgr1st != null">
+				AND CTGR_1ST = #{ctgr1st}
+			</if>
+			<if test="ctgr2nd != null">
+				AND CTGR_2ND = #{ctgr2nd}
+			</if>
+			<if test="ctgr3rd != null">
+				AND CTGR_3RD = #{ctgr3rd}
+			</if>
+			<if test="productNm != null">
+				AND UPPER(PRODUCT_NM) LIKE UPPER('%' ||#{productNm}|| '%')
+			</if>
+			<if test="ctgrId != null">
+				AND PRODUCT_ID LIKE UPPER(#{ctgrId} || '%')
+			</if>
+		</where>
+	</select>	
+
+	<select id="productCounter" resultType="int">
+		SELECT COUNT(0)
+		FROM PRODUCT
+		WHERE PRODUCT_ID LIKE #{productId} || '%'
+	</select>
+
+	<update id="updateProduct">		
+		UPDATE PRODUCT
+		SET
+		PTNR_ID     =  #{ptnrId},   
+		PRODUCT_NM  =  #{productNm},
+		CTGR_1ST    =  #{ctgr1st},  
+		CTGR_2ND    =  #{ctgr2nd},  
+		CTGR_3RD    =  #{ctgr3rd},  
+		SALES_COST  =  #{salesCost},
+		CMNT        =  #{cmnt} 
+		WHERE PRODUCT_ID = #{productId} 		
+	</update>
+
+	<delete id="deleteProduct" parameterType="ProductVo">
+	</delete>
+
+	<update id="updatecancelProduct" parameterType="ProductVo">
+	</update>
+
+</mapper>

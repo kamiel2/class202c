@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Purchase">
+
+	<resultMap id="purchase" type="com.ohhoonim.vo.PurchaseVo">
+		<result property="purchaseId"	 column="PURCHASE_ID" />
+		<result property="productId"	 column="PRODUCT_ID" />
+		<result property="unitPrice"	 column="UNIT_PRICE" />
+		<result property="amnt"		 	 column="AMNT" />
+		<result property="amntLo" 		 column="AMNT_LO" />
+		<result property="purchaseDate"	 column="PURCHASE_DATE" />
+		<result property="confirmDate" 	 column="CONFIRM_DATE" />
+		<result property="status" 		 column="STATUS" />
+		<result property="eta" 			 column="ETA" />
+		<result property="purchaseSum"	 column="PURCHASE_SUM" />
+		<result property="purchaseSumLo" column="PURCHASE_SUM_LO"/>
+		<result property="cmnt" 		 column="CMNT" />
+	</resultMap>
+	
+	<resultMap id="purchaseMap" type="java.util.Map">
+		<result property="purchaseId"	 column="PURCHASE_ID"	 javaType="java.lang.String"/>		
+		<result property="purchaseDate"  column="PURCHASE_DATE"	 javaType="java.lang.String"/>		
+		<result property="confirmDate" 	 column="CONFIRM_DATE"	 javaType="java.lang.String"/>		
+		<result property="ptnrNm" 		 column="PTNR_NM"		 javaType="java.lang.String"/>		
+		<result property="productId" 	 column="PRODUCT_ID"		 javaType="java.lang.String"/>		
+		<result property="productNm" 	 column="PRODUCT_NM"		 javaType="java.lang.String"/>		
+		<result property="stock" 		 column="STOCK"			 javaType="java.lang.String"/>		
+		<result property="safetyStock" 	 column="SAFETY_STOCK"	 javaType="java.lang.String"/>		
+		<result property="amnt" 		 column="AMNT"			 javaType="java.lang.String"/>		
+		<result property="amntLo" 		 column="AMNT_LO"		 javaType="java.lang.String"/>		
+		<result property="unitPrice" 	 column="UNIT_PRICE"		 javaType="java.lang.String"/>		
+		<result property="purchaseSum" 	 column="PURCHASE_SUM"	 javaType="java.lang.String"/>		
+		<result property="purchaseSumLo" column="PURCHASE_SUM_LO" javaType="java.lang.String"/>		
+		<result property="statusNm" 	 column="STATUS_NM"		 javaType="java.lang.String"/>		
+		<result property="status" 		 column="STATUS"			 javaType="java.lang.String"/>	
+		<result property="cmnt" 		 column="CMNT"			 javaType="java.lang.String"/>		
+		<result property="eta" 			 column="ETA"			 javaType="java.lang.String"/>		
+			
+	</resultMap>
+
+	<sql id="purchaseSql">
+		SELECT
+		PUR.PURCHASE_ID, TO_CHAR(PUR.PURCHASE_DATE, 'YYYYMMDDHH24MISS')AS PURCHASE_DATE, 
+		TO_CHAR(PUR.CONFIRM_DATE, 'YYYYMMDDHH24MISS')AS CONFIRM_DATE, P.PTNR_ID,
+		(SELECT PTNR.PTNR_NM FROM PARTNER PTNR WHERE PTNR.PTNR_ID=P.PTNR_ID)AS PTNR_NM, 
+		PUR.PRODUCT_ID, P.PRODUCT_NM, S.STOCK, S.SAFETY_STOCK, PUR.AMNT, PUR.AMNT_LO, PUR.UNIT_PRICE, PUR.PURCHASE_SUM,
+		(SELECT SUB_CODE_NM FROM CODE999 WHERE SUB_CODE=PUR.STATUS)AS STATUS_NM,
+		PUR.STATUS, PUR.CMNT
+		FROM 
+		PURCHASE PUR, PRODUCT P, STOCK S
+		WHERE
+		P.PRODUCT_ID=PUR.PRODUCT_ID AND S.PRODUCT_ID = P.PRODUCT_ID
+	</sql>
+
+	<insert id="insertPurchase" parameterType="PurchaseVo">
+	INSERT INTO PURCHASE ("PURCHASE_ID", "PRODUCT_ID", "UNIT_PRICE", "AMNT", "AMNT_LO",
+		"PURCHASE_DATE", "CONFIRM_DATE", "STATUS", "ETA", "PURCHASE_SUM", "PURCHASE_SUM_LO", "CMNT")
+	VALUES (
+		#{purchaseId },
+		#{productId },
+		#{unitPrice },
+		#{amnt },
+		#{amntLo },
+		sysdate,
+		#{confirmDate ,jdbcType=VARCHAR},
+		#{status },
+		#{eta ,jdbcType=VARCHAR },
+		#{purchaseSum },
+		#{purchaseSumLo},
+		#{cmnt }
+	)
+	</insert>
+
+	<select id="selectPurchase" resultMap="purchaseMap">
+		SELECT "PURCHASE_ID", "PURCHASE_DATE", "PTNR_NM", "PRODUCT_ID", "PRODUCT_NM", 
+				"STOCK", "AMNT", "AMNT_LO", "UNIT_PRICE", "PURCHASE_SUM", "STATUS_NM", "STATUS"
+ 		FROM (
+			<include refid="purchaseSql" />	
+		)
+		<where>
+			 ROWNUM <![CDATA[ <= ]]> 10
+			<if test="status!=null">
+				AND STATUS=#{status}
+			</if>
+			<if test="productNm!=null">
+				AND PRODUCT_NM LIKE '%'||#{productNm}||'%'
+			</if>	
+			<if test="ptnrNm != null">
+				AND UPPER(PTNR_NM) LIKE '%' ||#{ptnrNm}|| '%'
+			</if>
+			<if test="productId != null">
+				AND UPPER(PRODUCT_ID) LIKE UPPER('%' ||#{productId}|| '%')
+			</if>
+			<if test="ctgrId != null">
+				AND PRODUCT_ID LIKE UPPER(#{ctgrId} || '%')
+			</if>
+			<if test="startDate != null and endDate != null">
+				AND PURCHASE_DATE 
+				BETWEEN #{startDate} AND #{endDate}
+			</if>			 
+		</where>
+		ORDER BY PURCHASE_DATE DESC
+	</select>
+	
+	<select id="selectOnePurchase_short" resultMap="purchaseMap">
+			SELECT "PURCHASE_ID", "PTNR_NM", "PRODUCT_ID", "PRODUCT_NM", "AMNT", "AMNT_LO", "UNIT_PRICE"
+ 		FROM (
+			<include refid="purchaseSql" />	
+		)
+		WHERE
+		PURCHASE_ID = #{purchaseId}
+	
+	</select>
+	
+	<select id="purchaseIdCounter" resultType="int">
+	
+	SELECT COUNT(0) FROM PURCHASE WHERE PURCHASE_ID LIKE UPPER(#{productId} || '%')
+	
+	</select>
+	
+	<select id="Purchase_getAmnt_getSum" parameterType="PurchaseVo" resultMap="purchase">
+	
+	SELECT AMNT,AMNT_LO,PURCHASE_SUM,PURCHASE_SUM_LO FROM PURCHASE WHERE PURCHASE_ID =#{purchaseId}
+	
+	</select>
+
+	<update id="updatePurchase" parameterType="PurchaseVo" >
+	
+	UPDATE PURCHASE	
+	<set>
+	<if test="unitPrice != null">
+		UNIT_PRICE =#{unitPrice},
+	</if>
+	<if test="amnt != null">
+		AMNT =#{amnt} ,
+	</if>
+	<if test="amntLo != null">
+		AMNT_LO =#{amntLo},
+	</if>
+	<if test="purchaseDate != null">
+		PURCHASE_DATE =#{purchaseDate},
+	</if>
+	<if test="confirmDate != null">
+		CONFIRM_DATE =#{confirmDate},
+	</if>
+	<if test="status != null">
+		STATUS =#{status},
+	</if>
+	<if test="eta != null">
+		ETA =#{eta},
+	</if>
+	<if test="purchaseSum != null">
+		PURCHASE_SUM =#{purchaseSum	},
+	</if>
+	<if test="purchaseSumLo != null">
+		PURCHASE_SUM_LO =#{purchaseSumLo},
+	</if>
+	<if test="cmnt != null">
+		CMNT =#{cmnt}
+	</if>
+	</set>
+	WHERE
+	PURCHASE_ID = #{purchaseId}	
+	</update>
+
+	<delete id="deletePurchase" parameterType="PurchaseVo">
+	</delete>
+
+	<update id="updatecancelPurchase" parameterType="PurchaseVo">
+	</update>
+
+</mapper>

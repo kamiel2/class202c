@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Ptnr">
+
+	<resultMap id="ptnr" type="com.ohhoonim.vo.PtnrVo">
+		<result property="ptnrId" column="PTNR_ID" />
+		<result property="ptnrNm" column="PTNR_NM" />
+		<result property="ptnrNmEng" column="PTNR_NM_ENG" />
+		<result property="registerNo" column="REGISTER_NO" />
+		<result property="type" column="TYPE" />
+		<result property="addr" column="ADDR" />
+		<result property="tel" column="TEL" />
+		<result property="fax" column="FAX" />
+		<result property="ceoNm" column="CEO_NM" />
+		<result property="cltNm" column="CLT_NM" />
+		<result property="cltTel" column="CLT_TEL" />
+		<result property="cmnt" column="CMNT" />
+		<result property="countId" column="COUNT_ID" />
+		<result property="sumAmnt" column="SUM_AMNT" />
+		<result property="sumPrice" column="SUM_PRICE" />
+		<result property="total" column="TOTAL" />
+	</resultMap>
+	
+	<resultMap id="ptnrMap" type="java.util.Map">
+		<result property="ptnrId" column="PTNR_ID" />
+		<result property="ptnrNm" column="PTNR_NM" />
+		<result property="ptnrNmEng" column="PTNR_NM_ENG" />
+		<result property="registerNo" column="REGISTER_NO" />
+		<result property="type" column="TYPE" />
+		<result property="addr" column="ADDR" />
+		<result property="tel" column="TEL" />
+		<result property="fax" column="FAX" />
+		<result property="ceoNm" column="CEO_NM" />
+		<result property="cltNm" column="CLT_NM" />
+		<result property="cltTel" column="CLT_TEL" />
+		<result property="cmnt" column="CMNT" />
+	</resultMap>
+
+	<sql id="ptnrSql">
+	SELECT PTNR_ID,PTNR_NM,PTNR_NM_ENG,REGISTER_NO,TYPE,ADDR,TEL,FAX,CEO_NM,CLT_NM,CLT_TEL,CMNT
+	FROM PARTNER
+	</sql>
+
+	<insert id="ptnrAdd" parameterType="PtnrVo">
+		INSERT INTO PARTNER(PTNR_ID,PTNR_NM,PTNR_NM_ENG,REGISTER_NO,TYPE,ADDR,TEL,FAX,CEO_NM,CLT_NM,CLT_TEL,CMNT)
+		VALUES(#{ptnrId},#{ptnrNm},#{ptnrNmEng},#{registerNo},#{type},#{addr},#{tel},#{fax},#{ceoNm},#{cltNm},#{cltTel},#{cmnt})
+	</insert>
+
+	<select id="selectPtnr" parameterType="PtnrVo" resultMap="ptnr">
+		
+		SELECT DISTINCT(P.PTNR_ID),COUNT(O.ORDR_ID)  OVER (PARTITION BY P.PTNR_ID) COUNT_ID ,P.PTNR_NM,P.TYPE,
+		SUM(O.AMNT) OVER(PARTITION BY P.PTNR_ID) SUM_AMNT, 
+		SUM(O.SALES_COST) OVER (PARTITION BY P.PTNR_ID) SUM_PRICE,
+		(SUM(O.AMNT) OVER(PARTITION BY P.PTNR_ID) * SUM(O.SALES_COST) OVER(PARTITION BY P.PTNR_ID)) TOTAL
+		FROM PARTNER P, CODE999 C, ORDR O
+		WHERE P.PTNR_ID=O.PTNR_ID
+		<if test="type!=null">
+			AND P.TYPE LIKE '%' ||#{type}|| '%'
+		</if>
+		<if test="ptnrId != null">
+			AND P.PTNR_ID LIKE '%' ||#{ptnrId}|| '%'
+		</if>
+		<if test="ptnrNm != null">
+			AND P.PTNR_NM LIKE '%' ||#{ptnrNm}|| '%'
+		</if>
+		UNION 
+		SELECT DISTINCT(P.PTNR_ID), COUNT(P2.PURCHASE_ID) OVER(PARTITION BY P.PTNR_ID) COUNT_ID,P.PTNR_NM,P.TYPE,
+		SUM(P2.AMNT) OVER(PARTITION BY P.PTNR_ID) SUM_AMNT, 
+		SUM(P2.UNIT_PRICE) OVER (PARTITION BY P.PTNR_ID) SUM_PRICE,
+		(SUM(P2.AMNT) OVER(PARTITION BY P.PTNR_ID) * SUM(P2.UNIT_PRICE) OVER(PARTITION BY P.PTNR_ID)) TOTAL
+		FROM PRODUCT P1 , PURCHASE P2, PARTNER P
+		WHERE P1.PRODUCT_ID=P2.PRODUCT_ID
+		AND P1.PTNR_ID=P.PTNR_ID
+		<if test="type!=null">
+			AND P.TYPE LIKE '%' ||#{type}|| '%'
+		</if>
+		<if test="ptnrId != null">
+			AND P.PTNR_ID LIKE '%' ||#{ptnrId}|| '%'
+		</if>
+		<if test="ptnrNm != null">
+			AND P.PTNR_NM LIKE '%' ||#{ptnrNm}|| '%'
+		</if>
+		
+	</select>
+	
+	<select id="getPtnr" parameterType="ptnrVo" resultMap="ptnrMap">
+		SELECT PTNR_ID,PTNR_NM,PTNR_NM_ENG,REGISTER_NO,TYPE,ADDR,TEL,FAX,CEO_NM,CLT_NM,CLT_TEL,CMNT
+		FROM PARTNER
+		WHERE PTNR_ID = #{ptnrId} 
+	</select>
+	
+	<select id="ptnrSearch" parameterType="ptnrVo" resultMap="ptnr">
+	SELECT PTNR_ID, PTNR_NM, PTNR_NM_ENG, ADDR, CLT_TEL FROM (
+		<include refid="ptnrSql" />
+		WHERE TYPE=#{type}		
+		)
+		<where>
+			UPPER(PTNR_NM) LIKE '%' || #{ptnrNm} || '%' OR UPPER(PTNR_NM_ENG) LIKE '%' || #{ptnrNm} || '%'
+		</where>
+	</select>	
+
+	<update id="updatePtnr" parameterType="PtnrVo">
+	</update>
+
+	<delete id="deletePtnr" parameterType="PtnrVo">
+	</delete>
+
+	<update id="ptnrModify" >
+		UPDATE PARTNER
+		<set>
+			<if test="ptnrId!=null">PTNR_ID = #{ptnrId},</if>
+			<if test="ptnrNm!=null">PTNR_NM = #{ptnrNm},</if>
+			<if test="ptnrNmEng!=null">PTNR_NM_ENG = #{ptnrNmEng},</if>
+			<if test="registerNo!=null">REGISTER_NO = #{registerNo},</if>
+			<if test="type!=null">TYPE = #{type},</if>
+			<if test="addr!=null">ADDR = #{addr},</if>
+			<if test="tel!=null">TEL = #{tel},</if>
+			<if test="fax!=null">FAX = #{fax},</if>
+			<if test="ceoNm!=null">CEO_NM = #{ceoNm},</if>
+			<if test="cltNm!=null">CLT_NM = #{cltNm},</if>
+			<if test="cltTel!=null">CLT_TEL = #{cltTel},</if>
+			<if test="cmnt!=null">CMNT = #{cmnt}</if>
+		</set>
+		WHERE PTNR_ID = #{ptnrId}
+	</update>
+	
+	<select id="ptnrCounter" resultType="int">
+		SELECT COUNT(0)
+		FROM PARTNER
+		WHERE PTNR_ID = #{ptnrId}
+	</select>
+	
+	<select id="ptnrCounter1" resultType="int">
+		SELECT COUNT(0)
+		FROM PARTNER
+		WHERE PTNR_ID Like #{ptnrId} || '%'
+	</select>
+	
+	
+</mapper>

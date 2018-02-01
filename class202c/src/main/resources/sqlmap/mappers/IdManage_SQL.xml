@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IdManage">
+
+	<resultMap id="idManage" type="com.ohhoonim.vo.IdManageVo">
+		<result property="dept" column="DEPT" />
+		<result property="idNum" column="IDNUM" />
+
+	</resultMap>
+
+	<sql id="idManage">
+		SELECT DEPT, IDNUM FROM IDMANAGE
+	</sql>
+	
+	<select id = "idCounter">
+	
+	<include refid="idManage" />	
+	<where>
+	<if test="dept!=null">
+		DEPT = #{dept}
+	</if>	
+	</where>	
+	</select>
+	
+	<select id = "deptDupChk">
+		SELECT COUNT(0) FROM IDMANAGE WHERE DEPT = #{dept}
+	</select>
+	
+	<insert id = "insertIdManage">
+		INSERT INTO IDMANAGE (DEPT, IDNUM) VALUES (#{dept}, #{idNum})
+	</insert>
+	
+	<update id = "updateIdManage">
+		UPDATE IDMANAGE
+		SET 
+		IDNUM = #{idNum}
+		WHERE DEPT = #{dept}
+	</update>
+	
+</mapper>

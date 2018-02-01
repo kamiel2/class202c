@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+<link rel="stylesheet" href="/class202c/css/w3.css">
+
+</head>
+
+<style>
+#whole {
+	position: center;
+	width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#topMenu {
+	height: 30px;
+	width: 850px;
+	text-align: center;
+	float: left;
+	margin-top: 40px;
+}
+
+#topMenu ul li {
+	list-style: none;
+	color: white;
+	background-color: #2d2d2d;
+	float: left;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#topMenu .menuLink {
+	text-decoration: none;
+	color: white;
+	display: block;
+	width: 150px;
+	font-size: 16px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Dotum, Arial;
+	text-align: center;
+}
+
+#topMenu .menuLink:hover {
+	color: #ff3;
+	background-color: #4d4d4d;
+}
+
+#mainimg {
+	float: left;
+}
+
+#order {
+	width: 160px;
+	position: absolute;
+	height: 40px;
+	left: 50%;
+	top: 50%;
+	margin-left: -80px;
+	margin-top: -40px
+}
+</style>
+
+<body>
+	<div id="whole">
+		<header>
+			<a href="#"> <img src="img/더조은 메인.jpg" id=mainimg></a> <br>
+
+
+			<nav id="topMenu">
+				<ul>
+					<li><a class="menuLink"
+						href="http://localhost:8080/class202c/order-000.html">제품조회</a></li>
+					<li><a class="menuLink"
+						href="http://localhost:8080/class202c/order-001.html">장바구니</a></li>
+					<li><a class="menuLink"
+						href="http://localhost:8080/class202c/order-004.html">주문내역</a></li>
+
+				</ul>
+			</nav>
+		</header>
+		<br> <br> <br>
+		<div id="whole">
+			<form name="frm" action="" method="post">
+				<div style="text-align: center">
+					<H3>
+						<B>장바구니</B>
+					</H3>
+				</div>
+				<div class="w3-container  w3-left-align  w3-margin">
+					<H4>COMPUZONE 님의 장바구니</H4>
+				</div>
+				<div class="w3-container  w3-right-align  w3-margin">
+					<a href="" class="w3-btn w3-blue-grey">선택삭제</a>
+				</div>
+
+			</form>
+		</div>
+		<div>
+			<table border='1'
+				class="table table-striped table-bordered table-hover">
+				<tr>
+					<th><input type="checkbox" name="headerChk" value="" /></th>
+
+					<th class="w3-blue-grey">부품ID</th>
+					<th class="w3-blue-grey">부품명</th>
+					<th class="w3-blue-grey">제조사</th>
+					<th class="w3-blue-grey">개당가격</th>
+					<th class="w3-blue-grey">수량</th>
+
+					<th class="w3-blue-grey">총합</th>
+					<th class="w3-blue-grey">삭제</th>
+				</tr>
+
+				<tr class="temp">
+					<td><input type="checkbox" name="chk" value="" /></td>
+					<td>01425706</td>
+					<td>GALAXY1080TI</td>
+					<td>GALAXY</td>
+					<td>1,395,000</td>
+					<td><input type="number" name="quantity" min="0" max="판매수량 값"
+						step="1" value="0" width="20px">&nbsp;&nbsp;<a href="" class="w3-btn w3-blue-grey">수량변경</a>
+					<td>13,950,000</td>
+					<td><a href="" class="w3-btn w3-blue-grey">삭제</a></td>
+				</tr>
+
+				<tr>
+					<td><input type="checkbox" name="chk" value="" /></td>
+					<td>01370862</td>
+					<td>GIGABYTE GTX1070 8GB</td>
+					<td>GIGABYTE</td>
+					<td>598,000</td>
+					<td><input type="number" name="quantity" min="0" max="판매수량 값"
+						step="1" value="0" width="20px">&nbsp;&nbsp;<a href="" class="w3-btn w3-blue-grey">수량변경</a>
+					<td>11,960,000</td>
+					<td><a href="" class="w3-btn w3-blue-grey">삭제</a></td>
+				</tr>
+				<tr>
+					<td colspan="5"></td>
+					<td>총결제금액</td>
+					<td>25,910,000</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<a href="http://localhost:8080/class202c/order-002.html" class="w3-btn w3-blue-grey w3-center-align" id="order">주문하기</a>
+	</div>
+</body>
+</html>

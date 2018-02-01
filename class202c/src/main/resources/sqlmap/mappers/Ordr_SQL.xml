@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Ordr">
+
+	<resultMap id="ordr" type="com.ohhoonim.vo.OrdrVo">
+		<result property="ordrId" column="ORDR_ID" />
+		<result property="productId" column="PRODUCT_ID" />
+		<result property="ptnrId" column="PTNR_ID" />
+		<result property="amnt" column="AMNT" />
+		<result property="amntLo" column="AMNT_LO" />
+		<result property="ordrDate" column="ORDR_DATE" />
+		<result property="confirmDate" column="CONFIRM_DATE" />
+		<result property="status" column="STATUS" />
+		<result property="rstock" column="RSTOCK" />
+		<result property="total" column="TOTAL" />
+		<result property="profit" column="PROFIT" />
+		<result property="cmnt" column="CMNT" />
+		<result property="cartAmnt" column="CART_AMNT" />
+		<result property="cTotal" column="CART_TOTAL" />
+		<result property="soldAmnt" column="SOLD_AMNT" />
+	</resultMap>
+	
+	<resultMap id="ordrMap" type="java.util.Map">
+		<result property="ordrId" column="ORDR_ID"  />
+		<result property="productId" column="PRODUCT_ID" />
+		<result property="productNm" column="PRODUCT_NM" />
+		<result property="ptnrId" column="PTNR_ID" />
+		<result property="ptnrNm" column="PTNR_NM" />
+		<result property="ptnrNm2" column="PTNR_NM2" />
+		<result property="amnt" column="AMNT" />
+		<result property="amnt1" column="AMNT1" />
+		<result property="amntLo" column="AMNT_LO" />
+		<result property="unitPrice" column="UNIT_PRICE" />
+		<result property="ordrDate" column="ORDR_DATE" />
+		<result property="ogDate" column="OG_DATE" />
+		<result property="confirmDate" column="CONFIRM_DATE" />
+		<result property="status" column="STATUS" />
+		<result property="statusnm" column="STATUSNM" />
+		<result property="count" column="COUNT" />
+		<result property="salesCost" column="SALES_COST"/>
+		<result property="rstock" column="RSTOCK" />
+		<result property="total" column="TOTAL" />
+		<result property="cTotal" column="CART_TOTAL" />
+		<result property="profit" column="PROFIT" />
+		<result property="cmnt" column="CMNT" />
+		<result property="cartAmnt" column="CART_AMNT" />
+		<result property="soldAmnt" column="SOLD_AMNT" />
+	</resultMap>
+
+	<sql id="ordrSql">
+	</sql>
+	<select id="selectOrdr" parameterType="OrdrVo" resultMap="ordr">
+	SELECT P.PRODUCT_ID,P.PRODUCT_NM, PTNR.PTNR_NM, S.STOCK, P.SALES_COST, GREATEST(S.STOCK - S.SAFETY_STOCK - S.SOLD_AMNT, 0) AS RSTOCK,
+	
+	(SELECT CTGR_NM	FROM CATEGORY WHERE CTGR_ID=(SELECT CTGR_PARENT	FROM CATEGORY WHERE CTGR_ID =
+	(SELECT CTGR_PARENT FROM CATEGORY WHERE CTGR_ID=P.CTGR_3RD))) AS CTGR_1ST,
+	(SELECT CTGR_NM	FROM CATEGORY WHERE CTGR_ID = (SELECT CTGR_PARENT FROM CATEGORY	WHERE CTGR_ID=P.CTGR_2ND)) AS CTGR_2ND,
+	CATEGORY.CTGR_NM AS CTGR_3RD
+	
+	FROM PRODUCT P, STOCK S, PARTNER PTNR, CATEGORY
+	WHERE P.PRODUCT_ID = S.PRODUCT_ID AND PTNR.PTNR_ID=P.PTNR_ID AND CATEGORY.CTGR_ID=P.CTGR_3RD
+	</select>
+	
+	<select id="selectOrdrList" parameterType="OrdrVo" resultMap="ordrMap">
+		SELECT ORDR.ORDR_ID, TO_CHAR(ORDR.ORDR_DATE,('YYYYMMDD HH24:MI:SS')) AS ORDR_DATE, ORDR.PTNR_ID, PTNR.PTNR_NM,  ORDR.PRODUCT_ID, P.PRODUCT_NM, 
+		PTNR2.PTNR_NM AS PTNR_NM2, S.STOCK, ORDR.AMNT_LO, ORDR.AMNT, S.UNIT_PRICE , P.SALES_COST , C.SUB_CODE_NM AS STATUSNM, GREATEST(S.STOCK - S.SAFETY_STOCK, 0) AS RSTOCK,
+    	SUM(ORDR.AMNT) OVER(PARTITION BY ORDR.ORDR_ID) SUM_AMNT, 
+		SUM(P.SALES_COST) OVER (PARTITION BY ORDR.ORDR_ID) SUM_PRICE,
+    	(SUM(ORDR.AMNT) OVER(PARTITION BY ORDR.ORDR_ID) * SUM(P.SALES_COST) OVER(PARTITION BY ORDR.ORDR_ID)) TOTAL,
+    	((SUM(ORDR.AMNT) OVER(PARTITION BY ORDR.ORDR_ID) * SUM(P.SALES_COST) OVER (PARTITION BY ORDR.ORDR_ID)) - (SUM(ORDR.AMNT) OVER(PARTITION BY ORDR.ORDR_ID) * SUM(S.UNIT_PRICE) OVER(PARTITION BY ORDR.ORDR_ID))) PROFIT
+		, ordr.status
+		FROM ORDR, PRODUCT P, PARTNER PTNR, STOCK S, PARTNER PTNR2 ,CODE999 C
+		WHERE ORDR.PRODUCT_ID=P.PRODUCT_ID AND ORDR.PTNR_ID = PTNR.PTNR_ID AND ORDR.PRODUCT_ID=S.PRODUCT_ID AND ORDR.STATUS=C.SUB_CODE AND PTNR2.PTNR_ID=(SELECT PTNR_ID FROM PRODUCT WHERE PRODUCT_ID=ORDR.PRODUCT_ID)
+		<if test="ordrId != null">
+		AND ORDR_ID LIKE '%' || #{ordrId} || '%'
+		</if>
+		<if test="ptnrNm != null">
+		AND PTNR.PTNR_NM LIKE '%' || #{ptnrNm} || '%'
+		</if>
+		<if test="productNm != null">
+		AND P.PRODUCT_NM LIKE '%' || #{productNm} || '%'
+		</if>
+		<if test="startDate != null and endDate != null">
+		AND ORDR.ORDR_DATE BETWEEN to_date(#{startDate},'yyyymmddhh24miss') and  to_date(#{endDate},'yyyymmddhh24miss') 
+		</if>
+	</select> 
+	
+	<select id="selectOrdr_short" parameterType="OrdrVo" resultMap="ordrMap">
+		SELECT ORDR_ID, PTNR_NM, PRODUCT_ID,PRODUCT_NM, AMNT, AMNT_LO, UNIT_PRICE, SALES_COST 
+		FROM(
+			SELECT ORDR.ORDR_ID, TO_CHAR(ORDR.ORDR_DATE,('YYYYMMDD HH24:MI:SS')) AS ORDR_DATE, ORDR.PTNR_ID, PTNR.PTNR_NM,  ORDR.PRODUCT_ID, P.PRODUCT_NM, 
+			PTNR2.PTNR_NM AS PTNR_NM2, S.STOCK, ORDR.AMNT_LO, ORDR.AMNT, S.UNIT_PRICE , P.SALES_COST , C.SUB_CODE_NM AS STATUSNM, GREATEST(S.STOCK - S.SAFETY_STOCK, 0) AS RSTOCK
+			FROM ORDR, PRODUCT P, PARTNER PTNR, STOCK S, PARTNER PTNR2 ,CODE999 C
+			WHERE ORDR.PRODUCT_ID=P.PRODUCT_ID AND ORDR.PTNR_ID = PTNR.PTNR_ID AND ORDR.PRODUCT_ID=S.PRODUCT_ID AND ORDR.STATUS=C.SUB_CODE AND PTNR2.PTNR_ID=(SELECT PTNR_ID FROM PRODUCT WHERE PRODUCT_ID=ORDR.PRODUCT_ID)
+        	)
+		WHERE 
+		ORDR_ID = #{ordrId}
+	</select>
+	
+	<select id="selectOrdrOutgoingList" parameterType="OrdrVo" resultMap="ordrMap">
+		SELECT * FROM 
+		(
+		SELECT
+			ORDR1.ORDR_ID, O.COUNT, TO_CHAR(ORDR1.ORDR_DATE,('YYYYMMDD HH24:MI:SS')) AS ORDR_DATE, TO_CHAR(O.OG_DATE,('YYYYMMDD HH24:MI:SS')) AS OG_DATE, ORDR1.PTNR_ID, PTNR.PTNR_NM,  ORDR1.PRODUCT_ID, P.PRODUCT_NM, 
+			PTNR2.PTNR_NM AS PTNR_NM2, S.STOCK, ORDR1.AMNT_LO, ORDR1.AMNT, S.UNIT_PRICE , P.SALES_COST , C.SUB_CODE_NM AS STATUSNM , ORDR1.STATUS, GREATEST(S.STOCK - S.SAFETY_STOCK, 0) AS RSTOCK,O.AMNT AS AMNT1
+		FROM
+			ORDR ORDR1, PRODUCT P, PARTNER PTNR, STOCK S, PARTNER PTNR2 ,CODE999 C, OUTGOING O
+		WHERE
+			ORDR1.PRODUCT_ID=P.PRODUCT_ID AND
+			ORDR1.PTNR_ID = PTNR.PTNR_ID AND
+			ORDR1.PRODUCT_ID=S.PRODUCT_ID AND
+			ORDR1.STATUS=C.SUB_CODE AND
+			PTNR2.PTNR_ID=(SELECT PTNR_ID FROM PRODUCT WHERE PRODUCT_ID=ORDR1.PRODUCT_ID) AND
+			O.ORDR_ID = ORDR1.ORDR_ID AND
+			O.PRODUCT_ID = ORDR1.PRODUCT_ID
+		<if test="ordrId != null">
+		AND ORDR1.ORDR_ID = #{ordrId}
+		</if>
+		) ORDER BY ORDR_ID,COUNT ASC
+	</select> 
+	
+		<select id="cart" parameterType="OrdrVo" resultMap="ordrMap">
+SELECT
+	ORDR.ORDR_ID, TO_CHAR(ORDR.ORDR_DATE,('YYYY-MM-DD HH24:MI:SS')) AS ORDR_DATE, ORDR.PTNR_ID, PTNR.PTNR_NM, ORDR.AMNT,
+	C.SUB_CODE_NM AS STATUS, ORDR.PRODUCT_ID, P.PRODUCT_NM, S.STOCK, ORDR.AMNT, P.SALES_COST,  SUM(ORDR.AMNT) OVER(PARTITION BY ORDR.ORDR_ID) SUM_AMNT, 
+	SUM(P.SALES_COST) OVER (PARTITION BY ORDR.ORDR_ID) SUM_PRICE,
+	
+	(SUM(ORDR.AMNT * P.SALES_COST)OVER(PARTITION BY ORDR.ORDR_ID))TOTAL
+FROM
+	ORDR, PRODUCT P, PARTNER PTNR, STOCK S, CODE999 C
+WHERE
+	ORDR.PRODUCT_ID=P.PRODUCT_ID AND
+	ORDR.PTNR_ID = PTNR.PTNR_ID AND
+	ORDR.PRODUCT_ID=S.PRODUCT_ID AND
+	ORDR.STATUS=C.SUB_CODE AND
+    ORDR_ID LIKE '%' || #{ordrId} || '%' AND
+	ORDR.ORDR_DATE BETWEEN to_date(#{startDate},'yyyymmddhh24miss') and to_date(#{endDate},'yyyymmddhh24miss')
+	<!-- ('%ordrId%') -->
+
+	</select>
+
+	<update id="ordrupdateConfirm" >
+		UPDATE ORDR
+		SET
+		STATUS = '1301'
+		WHERE ORDR_ID = #{ordrId}
+		AND PRODUCT_ID = #{productId}
+	</update>
+	
+	<update id="updateOrdr" parameterType="ordrVo" >
+		UPDATE ORDR
+		SET
+		<if test="amntLo != null">
+		AMNT_LO =#{amntLo},
+		</if>
+		<if test="status != null">
+		STATUS =#{status}
+		</if>
+		WHERE ORDR_ID = #{ordrId}
+	</update>
+	
+	<select id="getOrdrAmnt" resultMap="ordrMap">
+		SELECT 
+		AMNT,AMNT_LO 
+		FROM ORDR 
+		WHERE ORDR_ID =#{ordrId}
+		AND PRODUCT_ID = #{productId}
+	</select>
+	
+	<select id="cartView" parameterType="OrdrVo" resultMap="ordrMap"> 
+        SELECT
+        C.PRODUCT_ID, P.PRODUCT_NM, T.PTNR_NM, P.SALES_COST, C.CART_AMNT,
+		(SUM(C.CART_AMNT) OVER (PARTITION BY C.PRODUCT_ID) * SUM(P.SALES_COST) OVER (PARTITION BY C.PRODUCT_ID)) AS CART_TOTAL
+        FROM
+         CART C, PARTNER T, PRODUCT P
+        WHERE
+        T.PTNR_ID = P.PTNR_ID AND
+         C.PRODUCT_ID = P.PRODUCT_ID
+
+	
+	</select>
+
+	<select id="hasCart" resultType="int">
+		select count(0) from cart where product_id = #{productId}
+	</select>
+	
+	<insert id="putCart"  parameterType="OrdrVo">
+		INSERT INTO CART (PRODUCT_ID, CART_AMNT, CART_ID)
+	 	VALUES (#{productId}, #{amnt}, SEQ_CART_ID.NEXTVAL)
+	</insert>
+		
+ 	<update id="updateCart">
+        UPDATE
+        	CART
+        SET
+        	CART_AMNT = CART_AMNT + #{amnt} 
+        WHERE
+        	PRODUCT_ID = #{productId}
+    </update>
+	<update id="amntUpdate">
+	   UPDATE 
+	   		CART
+	   	SET
+	   		CART_AMNT = #{cartAmnt} 
+	   	WHERE
+	   		PRODUCT_ID = #{productId}
+	
+	</update>	
+	<delete id ="delCart" parameterType="OrdrVo">
+		DELETE
+			CART
+		WHERE
+			PRODUCT_ID = #{productId}
+	</delete>
+	<delete id ="delOrdr" parameterType="OrdrVo">
+		DELETE
+			ORDR
+		WHERE
+			PRODUCT_ID = #{productId} AND
+			ORDR_ID =  #{ordrId}
+	</delete>
+	
+	
+	<select id="nextOrdrId" resultType="string">
+		select SEQ_ORDR.NEXTVAL from dual
+	</select>
+	
+	<insert id="insertOrdr">
+		INSERT INTO ORDR (
+			ORDR_ID
+			, PRODUCT_ID
+			, PTNR_ID
+			, UNIT_PRICE
+			, SALES_COST
+			, AMNT
+			, AMNT_LO
+			, ORDR_DATE
+			, CONFIRM_DATE
+			, STATUS
+			, CMNT
+		) 
+		VALUES(
+			  #{ordrId}
+			, #{productId}
+			, #{ptnrId}
+			, #{unitPrice}
+			, (select max(SALES_COST) from product where product_id = #{productId})
+			, #{amnt}
+			, #{amntLo}
+			, sysdate
+			, #{confirmDate}
+			, #{status}
+			, #{cmnt}
+		)
+	</insert>
+	
+
+</mapper>

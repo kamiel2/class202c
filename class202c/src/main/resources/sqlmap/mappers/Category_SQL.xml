@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Category">
+
+	<resultMap id="category" type="com.ohhoonim.vo.CategoryVo">
+		<result property="ctgrId" column="CTGR_ID" />
+		<result property="ctgrNm" column="CTGR_NM" />
+		<result property="ctgrParent" column="CTGR_PARENT" />
+		<result property="ctgrLvl" column="CTGR_LVL" />
+	</resultMap>
+
+	<sql id="ctgrSql">
+		SELECT CTGR_ID, CTGR_NM, CTGR_PARENT, CTGR_LVL FROM
+		CATEGORY
+	</sql>
+
+	<insert id="insertCtgr" parameterType="CategoryVo">
+		INSERT INTO CATEGORY
+		(CTGR_ID,CTGR_NM,CTGR_PARENT,CTGR_LVL)
+		VALUES
+		(#{ctgrId},#{ctgrNm},#{ctgrParent, jdbcType=VARCHAR},#{ctgrLvl})
+	</insert>
+
+	<select id="selectCtgr" parameterType="CategoryVo" resultMap="category">
+		<include refid="ctgrSql" />
+		<where>
+			<if test="ctgrParent != null">
+				CTGR_PARENT = #{ctgrParent, jdbcType=VARCHAR}
+			</if>
+			<if test="ctgrId != null">
+				CTGR_ID = #{ctgrId}
+			</if>
+			<if test="ctgrLvl != null">
+				CTGR_LVL = #{ctgrLvl}
+			</if>
+		</where>
+		ORDER BY CTGR_ID
+	</select>
+
+	<select id="selectCtgrIdNm" parameterType="CategoryVo"
+		resultMap="category">
+		select CTGR_ID, CTGR_NM FROM (
+		<include refid="ctgrSql" />
+		)
+		<where>
+			<if test="ctgrParent != null">
+				CTGR_PARENT = #{ctgrParent}
+			</if>
+			<if test="ctgrId != null">
+				CTGR_ID = #{ctgrId}
+			</if>
+			<if test="ctgrLvl != null">
+				CTGR_LVL = #{ctgrLvl}
+			</if>
+		</where>
+		ORDER BY CTGR_ID
+	</select>
+
+	<select id="ctgrCounter" resultType="int">
+		SELECT COUNT(0) FROM CATEGORY
+		<where>
+			<if test="ctgrParent != null">
+				CTGR_PARENT = #{ctgrParent}
+			</if>
+			<if test="ctgrId != null">
+				AND CTGR_ID = #{ctgrId}
+			</if>
+			<if test="ctgrLvl != null">
+				AND CTGR_LVL = #{ctgrLvl}
+			</if>
+		</where>
+	</select>
+
+	<select id="ctgrIdDupChk" resultType="int">
+		SELECT COUNT(0) FROM CATEGORY
+		WHERE CTGR_ID = #{ctgrId}
+	</select>
+
+	<select id="ctgrNmDupChk" resultType="int">
+		SELECT COUNT(0)
+		FROM CATEGORY
+		<where>
+			 UPPER(REPLACE(CTGR_NM,' ','')) = UPPER(#{ctgrNm})
+			<if test="ctgrLvl != null">
+				AND CTGR_LVL = #{ctgrLvl}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateCtgr" parameterType="CategoryVo">
+	</update>
+
+	<delete id="deleteCtgr" parameterType="CategoryVo">
+	</delete>
+
+	<update id="updatecanctgr" parameterType="CategoryVo">
+	</update>
+
+</mapper>
