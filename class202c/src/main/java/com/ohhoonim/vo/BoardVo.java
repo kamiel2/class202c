@@ -12,6 +12,7 @@ public class BoardVo {
 	private String contents;
 	
 	
+	
 	private int pageNo;
 	private int pageSize;
 	
